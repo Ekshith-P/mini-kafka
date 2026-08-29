@@ -1,0 +1,46 @@
+# A 3-broker mini-kafka cluster.
+#
+# docker compose up --build
+#
+# Run a client inside the compose network (so it can resolve the mk-broker-* hostnames the brokers
+# advertise in metadata):
+#
+# docker compose run --rm mk-broker-1 create-topic --bootstrap mk-broker-1:9092 --topic demo --partitions 3 --replication 3
+# docker compose run --rm mk-broker-1 produce --bootstrap mk-broker-1:9092 --topic demo
+# docker compose run --rm mk-broker-1 consume --bootstrap mk-broker-1:9092 --topic demo --from-beginning
+
+services:
+  mk-broker-1:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: ["broker", "config/docker/broker-1.properties"]
+    ports:
+      - "9092:9092"
+    volumes:
+      - mk-data-1:/data
+
+  mk-broker-2:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: ["broker", "config/docker/broker-2.properties"]
+    ports:
+      - "9093:9092"
+    volumes:
+      - mk-data-2:/data
+
+  mk-broker-3:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: ["broker", "config/docker/broker-3.properties"]
+    ports:
+      - "9094:9092"
+    volumes:
+      - mk-data-3:/data
+
+volumes:
+  mk-data-1:
+  mk-data-2:
+  mk-data-3:
